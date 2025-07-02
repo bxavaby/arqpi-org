@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 	"strconv"
@@ -52,7 +53,17 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 
 			if c.count >= limit {
 				w.Header().Set("Retry-After", strconv.Itoa(windowSecs))
-				http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusTooManyRequests)
+
+				donationMessage := map[string]any{
+					"error":               "Rate limit exceeded",
+					"message":             "You've reached the free usage limit. Consider supporting this project on Ko-fi to get unlimited access.",
+					"donate_url":          "https://ko-fi.com/bxav",
+					"retry_after_seconds": windowSecs,
+				}
+
+				json.NewEncoder(w).Encode(donationMessage)
 				return
 			}
 

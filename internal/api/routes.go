@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/render"
 )
 
 func (a *API) SetupRoutes() http.Handler {
@@ -36,6 +38,28 @@ func (a *API) SetupRoutes() http.Handler {
 
 	// Apply rate limiter middleware
 	r.Use(a.RateLimiter(rateLimit, rateWindow))
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		render.JSON(w, r, map[string]any{
+			"name":        "Fernando Pessoa API",
+			"version":     "1.0.0",
+			"description": "API for accessing Fernando Pessoa's works",
+			"endpoints": []string{
+				"/fragment?id=123",
+				"/random",
+				"/search?q=term",
+				"/info",
+				"/quote",
+				"/status",
+			},
+			"documentation": "https://github.com/bxavaby/arqpi-org",
+			"usage_limits": map[string]any{
+				"free_tier":    fmt.Sprintf("%d requests per %d seconds", rateLimit, rateWindow),
+				"unlimited":    "Available for Ko-fi supporters",
+				"support_link": "https://ko-fi.com/bxav",
+			},
+		})
+	})
 
 	// CORS for frontend
 	r.Use(cors.Handler(cors.Options{
