@@ -2,6 +2,8 @@ package api
 
 import (
 	"net/http"
+	"os"
+	"strconv"
 	"sync/atomic"
 
 	"github.com/go-chi/chi/v5"
@@ -15,6 +17,25 @@ func (a *API) SetupRoutes() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(a.requestCounter)
+
+	// 60 requests/h for non-donors
+	rateLimit := 60
+	rateWindow := 3600
+
+	if envLimit := os.Getenv("API_RATE_LIMIT"); envLimit != "" {
+		if val, err := strconv.Atoi(envLimit); err == nil && val > 0 {
+			rateLimit = val
+		}
+	}
+
+	if envWindow := os.Getenv("API_RATE_WINDOW"); envWindow != "" {
+		if val, err := strconv.Atoi(envWindow); err == nil && val > 0 {
+			rateWindow = val
+		}
+	}
+
+	// Apply rate limiter middleware
+	r.Use(a.RateLimiter(rateLimit, rateWindow))
 
 	// CORS for frontend
 	r.Use(cors.Handler(cors.Options{
