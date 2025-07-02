@@ -36,8 +36,17 @@ func (a *API) SetupRoutes() http.Handler {
 		}
 	}
 
-	// Apply rate limiter middleware
 	r.Use(a.RateLimiter(rateLimit, rateWindow))
+
+	// CORS for frontend
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://arqpi.org", "https://www.arqpi.org"},        // Consider restricting this in production
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},                            // Added POST for webhook
+		AllowedHeaders:   []string{"Accept", "Content-Type", "Kofi-Verification-Token"}, // Added Ko-fi header
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, map[string]any{
@@ -60,16 +69,6 @@ func (a *API) SetupRoutes() http.Handler {
 			},
 		})
 	})
-
-	// CORS for frontend
-	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://arqpi.org", "https://www.arqpi.org"},        // Consider restricting this in production
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},                            // Added POST for webhook
-		AllowedHeaders:   []string{"Accept", "Content-Type", "Kofi-Verification-Token"}, // Added Ko-fi header
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
-		MaxAge:           300,
-	}))
 
 	// API routes
 	r.Get("/fragment", a.GetFragment)
