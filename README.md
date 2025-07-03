@@ -25,3 +25,7 @@ Thank you for supporting arqpi.org through [Ko-fi](https://ko-fi.com)! As a toke
 4. Enjoy unlimited access to the API!
 
 > I use a manual activation process to ensure security and proper record-keeping. If you haven't received your activation confirmation within 24 hours, please reach out!
+
+## Frontend
+
+A minimalist interface is available in the `frontend/` folder and hosted on GitHub Pages for easy exploration of the API.

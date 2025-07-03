@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>arqpi - Pessoa Digital Archive</title>
+        <link rel="stylesheet" href="styles/theme.css" />
+        <link rel="stylesheet" href="styles/zine.css" />
+        <link rel="stylesheet" href="styles/animations.css" />
+        <!-- Pixelated fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div class="zine-container">
+            <!-- Header -->
+            <header class="zine-header">
+                <h1 class="site-title">arqpi</h1>
+                <div class="site-subtitle">
+                    arquivo pessoa digital interface
+                </div>
+            </header>
+
+            <nav class="zine-nav">
+                <div
+                    class="nav-item"
+                    data-endpoint="/fragment"
+                    data-needs-input="true"
+                    data-input-param="id"
+                >
+                    <div class="nav-icon">F</div>
+                    <div class="nav-text">Fragment</div>
+                </div>
+                <div class="nav-item" data-endpoint="/random">
+                    <div class="nav-icon">R</div>
+                    <div class="nav-text">Random</div>
+                </div>
+                <div
+                    class="nav-item"
+                    data-endpoint="/search"
+                    data-needs-input="true"
+                    data-input-param="q"
+                >
+                    <div class="nav-icon">S</div>
+                    <div class="nav-text">Search</div>
+                </div>
+                <div class="nav-item" data-endpoint="/quote">
+                    <div class="nav-icon">Q</div>
+                    <div class="nav-text">Quote</div>
+                </div>
+                <div class="nav-item" data-endpoint="/info">
+                    <div class="nav-icon">I</div>
+                    <div class="nav-text">Info</div>
+                </div>
+                <div class="nav-item" data-endpoint="/status">
+                    <div class="nav-icon">T</div>
+                    <div class="nav-text">Status</div>
+                </div>
+            </nav>
+
+            <main class="zine-content">
+                <div class="content-page current" id="welcome-page">
+                    <div class="page-title">Welcome to arqpi</div>
+                    <div class="page-text">
+                        <p>
+                            A digital interface for exploring the works of
+                            Fernando Pessoa.
+                        </p>
+                        <div class="page-decoration">
+                            <span>·</span><span>·</span><span>·</span>
+                        </div>
+                        <div class="quote">
+                            <p>Farewell, farewell for ever;</p>
+                            <p class="indent">
+                                'Tis time this thing were done,
+                            </p>
+                            <p>When love is cold which was a fever</p>
+                            <p class="indent">And vulgar as a stone,</p>
+                            <p>When life from woe to woe doth flee</p>
+                            <p>And change itself is misery.</p>
+                        </div>
+                        <p class="author">— Alexander Search, "Insomnia"</p>
+                    </div>
+                </div>
+
+                <div class="content-page" id="content-display"></div>
+
+                <div class="input-container hidden" id="input-container">
+                    <input
+                        type="text"
+                        id="input-field"
+                        placeholder="Enter your query..."
+                    />
+                    <button id="submit-btn">Search</button>
+                </div>
+            </main>
+
+            <footer class="zine-footer">
+                <p>
+                    arqpi is a project by
+                    <a href="https://ko-fi.com/bxav" target="_blank">bxav</a> |
+                    <a
+                        href="https://github.com/bxavaby/arqpi-org"
+                        target="_blank"
+                        >GitHub</a
+                    >
+                </p>
+            </footer>
+        </div>
+
+        <script src="scripts/api.js"></script>
+        <script src="scripts/zine.js"></script>
+    </body>
+</html>

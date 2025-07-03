@@ -40,9 +40,9 @@ func (a *API) SetupRoutes() http.Handler {
 
 	// CORS for frontend
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://arqpi.org", "https://www.arqpi.org"},        // Consider restricting this in production
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},                            // Added POST for webhook
-		AllowedHeaders:   []string{"Accept", "Content-Type", "Kofi-Verification-Token"}, // Added Ko-fi header
+		AllowedOrigins:   []string{"https://arqpi.org", "https://www.arqpi.org"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Content-Type", "Kofi-Verification-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 		MaxAge:           300,
