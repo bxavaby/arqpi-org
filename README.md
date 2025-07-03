@@ -17,7 +17,7 @@ For free, unlimited access to the API, consider supporting the project on [Ko-fi
 
 ## API Keys for Supporters
 
-Thank you for supporting arqpi.org through Ko-fi! As a token of our appreciation, supporters receive an unlimited-use API key that bypasses rate limits.
+Thank you for supporting arqpi.org through Ko-fi! As a token of appreciation, supporters receive an unlimited-use API key that bypasses rate limits.
 
 ### How It Works:
 
