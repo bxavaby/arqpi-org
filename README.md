@@ -1,5 +1,3 @@
-# arqpi-org
-
 A REST API providing programmatic access to Fernando Pessoa's works.
 
 ## Overview
@@ -18,3 +16,16 @@ arqpi-org serves fragments of text from Fernando Pessoa and his heteronyms throu
 ## Usage
 
 For free, unlimited access to the API, consider supporting the project on [Ko-fi](https://ko-fi.com).
+
+## API Keys for Supporters
+
+Thank you for supporting arqpi.org through Ko-fi! As a token of our appreciation, supporters receive an unlimited-use API key that bypasses rate limits.
+
+### How It Works:
+
+1. After your donation, Ko-fi will immediately display your unique API key
+2. This key is manually activated within 24 hours (usually sooner!)
+3. Once activated, add `?key=YOUR_API_KEY` to any API request
+4. Enjoy unlimited access to the API!
+
+> I use a manual activation process to ensure security and proper record-keeping. If you haven't received your activation confirmation within 24 hours, please reach out!
