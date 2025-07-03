@@ -11,13 +11,9 @@ arqpi-org serves fragments of text from Fernando Pessoa and his heteronyms throu
 - `/quote` - Return a short, quotable fragment
 - `/status` - API status and statistics
 
-## Usage
-
-For free, unlimited access to the API, consider supporting the project on [Ko-fi](https://ko-fi.com).
-
 ## API Keys for Supporters
 
-Thank you for supporting arqpi.org through Ko-fi! As a token of appreciation, supporters receive an unlimited-use API key that bypasses rate limits.
+Thank you for supporting arqpi.org through [Ko-fi](https://ko-fi.com)! As a token of appreciation, supporters receive an unlimited-use API key that bypasses rate limits.
 
 ### How It Works:
 
