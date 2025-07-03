@@ -1,5 +1,3 @@
-A REST API providing programmatic access to Fernando Pessoa's works.
-
 ## Overview
 
 arqpi-org serves fragments of text from Fernando Pessoa and his heteronyms through a lightweight, fast API. The entire dataset (4079 fragments) is loaded in memory for efficient access and search.
