@@ -40,7 +40,7 @@ func (a *API) SetupRoutes() http.Handler {
 
 	// CORS for frontend
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://arqpi.org", "https://www.arqpi.org"},
+		AllowedOrigins:   []string{"https://arqpi.org", "https://www.arqpi.org", "https://bxavaby.github.io/arqpi-org/"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Kofi-Verification-Token"},
 		ExposedHeaders:   []string{"Link"},
