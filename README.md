@@ -1,6 +1,8 @@
 ## Overview
 
-arqpi-org serves fragments of text from Fernando Pessoa and his heteronyms through a lightweight, fast API. The entire dataset (4079 fragments) is loaded in memory for efficient access and search.
+arqpi-org serves fragments of text from Fernando Pessoa and his heteronyms through a lightweight, fast API. The entire dataset (4079 fragments) is loaded in memory for efficient access and search. Currently available at: https://arqpi-org.onrender.com
+
+> If your request returns a 502, retry after ~1 min!
 
 ## Endpoints
 
