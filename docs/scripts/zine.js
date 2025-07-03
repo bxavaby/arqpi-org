@@ -290,4 +290,5 @@ class PixelZine {
 
 document.addEventListener("DOMContentLoaded", () => {
   window.pixelZine = new PixelZine();
+  window.apiSettings = new ApiSettings();
 });
