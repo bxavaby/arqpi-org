@@ -1,16 +1,18 @@
 <div align="center">
 
-# <img src="assets/fpis.png" alt="Fernando Pessoa API" height="40"> ARQPI.ORG
+<img src="assets/fpis.png" alt="Fernando Pessoa API" height="40"> <br> 
+
+**Text corpus of Portugal's literary genius**
+
+────
 
 [![Live API](https://img.shields.io/badge/LIVE_API-111d3b?style=for-the-badge&logoColor=white)](https://arqpi-org.onrender.com)
 [![Frontend](https://img.shields.io/badge/EXPLORE-c7f0ff?style=for-the-badge&logoColor=111d3b)](https://arqpi.org)
 [![Ko-fi](https://img.shields.io/badge/Support-ffdfdf?style=for-the-badge&logo=ko-fi&logoColor=111d3b)](https://ko-fi.com/bxav)
 
-**Fernando Pessoa fragments API - Text corpus of Portugal's literary genius**
-
 ────
 
-**4079 fragments** • **Memory-optimized** • **Full-text search** • **Rate limited**
+**4079 fragments** | **Memory-optimized** | **Full-text search** | **Rate limited**
 
 ────
 
@@ -18,7 +20,6 @@
 ![Go](https://img.shields.io/badge/Golang-94ffab?style=flat-square&logo=go&logoColor=111d3b)
 ![Full-text Search](https://img.shields.io/badge/Full--text_Search-bbff94?style=flat-square&logoColor=111d3b)
 ![Heteronyms](https://img.shields.io/badge/Heteronyms-ffdfdf?style=flat-square&logoColor=111d3b)
-![Fernando Pessoa](https://img.shields.io/badge/Fernando_Pessoa-111d3b?style=flat-square&logoColor=white)
 
 </div>
 
@@ -26,7 +27,7 @@
 
 arqpi.org serves fragments of text from Fernando Pessoa and his heteronyms through a lightweight, fast API. The entire dataset (4079 fragments) is loaded in memory for efficient access and search.
 
-> ⚠️ If your request returns a 502, retry after ~1 min as the free service may need to wake up!
+> If your request returns a 502, retry after ~1 min as the free service may need to wake up!
 
 ## Endpoints
 
