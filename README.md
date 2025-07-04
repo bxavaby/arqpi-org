@@ -78,7 +78,7 @@ Thank you for supporting arqpi.org through [Ko-fi](https://ko-fi.com/bxav)! As a
 
 A minimalist interface is available at [arqpi.org](https://arqpi.org) for easy exploration of the API.
 
-<img src="https://raw.githubusercontent.com/bxavaby/arqpi-org/main/docs/assets/screenshot.png" alt="Fernando Pessoa API Interface" width="650">
+<img src="https://raw.githubusercontent.com/bxavaby/arqpi-org/main/assets/screenshot.png" alt="Fernando Pessoa API Interface" width="650">
 
 ────
 
