@@ -253,24 +253,44 @@ class PixelZine {
   formatInfo(info) {
     const description =
       info.project_info?.description || "No description available";
-    const version = info.project_info?.api_version || "";
+    const heteronymDesc = info.heteronyms_info?.description || "";
 
     return `
-          <p>${description}</p>
-          ${version ? `<p>API Version: ${version}</p>` : ""}
+          <div class="info-section">
+              <p>${description}</p>
+              <p class="info-detail">API Version ${info.project_info?.api_version || "1.0.0"}</p>
+          </div>
 
           <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
 
-          <p><strong>Collection</strong>: ${info.fragments_count.toLocaleString()} fragments</p>
-          <p><strong>Authors</strong>: ${info.authors_count} heteronyms and personas</p>
-          <p><strong>Categories</strong>: ${info.categories_count} categories</p>
+          <div class="info-section">
+              <p class="info-highlight">${info.fragments_count?.toLocaleString() || 0} fragments</p>
+              <p class="info-detail">from ${info.authors_count || 0} authors across ${info.categories_count || 0} categories</p>
+          </div>
 
           <div class="page-decoration"><span>·</span></div>
 
-          <p><strong>Main Heteronyms</strong>:</p>
-          <ul>
-              ${info.heteronyms_info?.main_heteronyms?.map((name) => `<li>${name}</li>`).join("") || ""}
-          </ul>
+          <div class="info-section">
+              <p class="info-title">The Heteronyms</p>
+              <p>${heteronymDesc}</p>
+
+              <div class="main-heteronyms">
+                  ${
+                    info.heteronyms_info?.main_heteronyms
+                      ?.map(
+                        (name) => `<span class="heteronym-name">${name}</span>`,
+                      )
+                      .join(" · ") || ""
+                  }
+              </div>
+          </div>
+
+          <div class="page-decoration"><span>·</span></div>
+
+          <div class="info-section">
+              <p class="info-detail">Source: ${info.project_info?.source || ""}</p>
+              <p class="info-detail small">${info.project_info?.license || ""}</p>
+          </div>
       `;
   }
 
