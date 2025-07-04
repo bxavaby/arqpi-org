@@ -251,21 +251,27 @@ class PixelZine {
   }
 
   formatInfo(info) {
+    const description =
+      info.project_info?.description || "No description available";
+    const version = info.project_info?.api_version || "";
+
     return `
-            <p>${info.description || "No description available"}</p>
-            ${info.version ? `<p>Version: ${info.version}</p>` : ""}
-            ${
-              info.endpoints
-                ? `
-                <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
-                <p>Available endpoints:</p>
-                <ul>
-                    ${info.endpoints.map((endpoint) => `<li>${endpoint}</li>`).join("")}
-                </ul>
-            `
-                : ""
-            }
-        `;
+          <p>${description}</p>
+          ${version ? `<p>API Version: ${version}</p>` : ""}
+
+          <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
+
+          <p><strong>Collection</strong>: ${info.fragments_count.toLocaleString()} fragments</p>
+          <p><strong>Authors</strong>: ${info.authors_count} heteronyms and personas</p>
+          <p><strong>Categories</strong>: ${info.categories_count} categories</p>
+
+          <div class="page-decoration"><span>·</span></div>
+
+          <p><strong>Main Heteronyms</strong>:</p>
+          <ul>
+              ${info.heteronyms_info?.main_heteronyms?.map((name) => `<li>${name}</li>`).join("") || ""}
+          </ul>
+      `;
   }
 
   formatStatus(status) {
