@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -14,39 +13,16 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 	donorKeysStr := os.Getenv("DONOR_API_KEYS")
 	donorKeys := make(map[string]bool)
 	if donorKeysStr != "" {
-		for key := range strings.SplitSeq(donorKeysStr, ",") {
+		for _, key := range strings.Split(donorKeysStr, ",") {
 			donorKeys[strings.TrimSpace(key)] = true
 		}
 	}
 
-	type client struct {
-		count     int
-		lastReset time.Time
-	}
-	clients := make(map[string]*client)
-
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			if origin := r.Header.Get("Origin"); origin != "" {
-				allowedOrigins := []string{"https://arqpi.org", "https://www.arqpi.org", "https://bxavaby.github.io"}
-				if slices.Contains(allowedOrigins, origin) {
-					w.Header().Set("Access-Control-Allow-Origin", origin)
-				}
-			}
-
-			// return immediately
 			if r.Method == "OPTIONS" {
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-				w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Kofi-Verification-Token")
-				w.Header().Set("Access-Control-Max-Age", "300")
-				w.WriteHeader(http.StatusOK)
+				next.ServeHTTP(w, r)
 				return
-			}
-
-			ip := r.Header.Get("X-Forwarded-For")
-			if ip == "" {
-				ip = r.RemoteAddr
 			}
 
 			apiKey := r.URL.Query().Get("key")
@@ -55,9 +31,14 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 				return
 			}
 
-			c, exists := clients[ip]
+			clientID := getClientID(r)
+
+			a.clientsMu.Lock()
+			defer a.clientsMu.Unlock()
+
+			c, exists := a.clients[clientID]
 			if !exists {
-				clients[ip] = &client{
+				a.clients[clientID] = &client{
 					count:     1,
 					lastReset: time.Now(),
 				}
@@ -94,14 +75,36 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 	}
 }
 
+func getClientID(r *http.Request) string {
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		ip = r.RemoteAddr
+	}
+
+	if commaIdx := strings.Index(ip, ","); commaIdx > 0 {
+		ip = strings.TrimSpace(ip[:commaIdx])
+	}
+
+	ua := r.Header.Get("User-Agent")
+	if len(ua) > 50 {
+		ua = ua[:50]
+	}
+
+	return ip + "|" + ua
+}
+
 func isDonorKey(key string) bool {
+	if key == "" {
+		return false
+	}
+
 	donorKeysEnv := os.Getenv("DONOR_API_KEYS")
 	if donorKeysEnv == "" {
 		return false
 	}
 
-	donorKeys := strings.SplitSeq(donorKeysEnv, ",")
-	for k := range donorKeys {
+	donorKeys := strings.Split(donorKeysEnv, ",")
+	for _, k := range donorKeys {
 		if strings.TrimSpace(k) == key {
 			return true
 		}

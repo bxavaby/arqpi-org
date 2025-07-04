@@ -328,39 +328,33 @@ a:hover {
 
 /* Status */
 .status-section {
+    margin-bottom: var(--space-md);
     text-align: center;
-    margin-bottom: var(--space-lg);
 }
 
 .status-indicator {
     display: inline-block;
     padding: var(--space-xs) var(--space-md);
-    border-radius: 4px;
+    border-radius: 20px;
     font-family: var(--font-mono);
-    font-weight: bold;
+    font-size: 0.9rem;
 }
 
 .status-operational {
-    background-color: rgba(148, 255, 171, 0.1);
+    background-color: rgba(148, 255, 171, 0.15);
     color: var(--color-green-bright);
     border: 1px solid var(--color-green-bright);
 }
 
 .status-error {
-    background-color: rgba(255, 85, 85, 0.1);
+    background-color: rgba(255, 85, 85, 0.15);
     color: var(--color-error);
     border: 1px solid var(--color-error);
 }
 
-.status-details {
+.status-details p {
     font-family: var(--font-mono);
-    line-height: 1.8;
-}
-
-.status-message {
-    margin-top: var(--space-md);
-    padding: var(--space-sm);
-    border-left: 2px solid var(--color-accent);
+    margin-bottom: var(--space-xs);
 }
 
 /* Footer */

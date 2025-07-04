@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/bxavaby/arqpi-org/internal/models"
@@ -23,6 +24,13 @@ type API struct {
 	StartTime    time.Time
 	RequestCount int64
 	rng          *rand.Rand
+	clients      map[string]*client
+	clientsMu    sync.Mutex
+}
+
+type client struct {
+	count     int
+	lastReset time.Time
 }
 
 func NewAPI(fragments []models.Fragment, metadata models.Metadata, rng *rand.Rand) *API {
@@ -32,6 +40,7 @@ func NewAPI(fragments []models.Fragment, metadata models.Metadata, rng *rand.Ran
 		SearchIndex: search.NewSearchIndex(fragments),
 		StartTime:   time.Now(),
 		rng:         rng,
+		clients:     make(map[string]*client),
 	}
 }
 
@@ -139,12 +148,42 @@ func (a *API) GetQuote(w http.ResponseWriter, r *http.Request) {
 func (a *API) GetStatus(w http.ResponseWriter, r *http.Request) {
 	uptime := time.Since(a.StartTime)
 
+	clientID := getClientID(r)
+
+	a.clientsMu.Lock()
+	userRequests := 0
+	remainingRequests := 0
+
+	rateLimit := 60
+	if envLimit := os.Getenv("API_RATE_LIMIT"); envLimit != "" {
+		if val, err := strconv.Atoi(envLimit); err == nil && val > 0 {
+			rateLimit = val
+		}
+	}
+
+	if client, exists := a.clients[clientID]; exists {
+		userRequests = client.count
+		remainingRequests = rateLimit - client.count
+		if remainingRequests < 0 {
+			remainingRequests = 0
+		}
+	} else {
+		remainingRequests = rateLimit
+	}
+	a.clientsMu.Unlock()
+
+	apiKey := r.URL.Query().Get("key")
+	isDonor := isDonorKey(apiKey)
+
 	render.JSON(w, r, map[string]any{
-		"status":         "operational",
-		"uptime":         uptime.String(),
-		"version":        "1.0.0",
-		"fragment_count": len(a.Fragments),
-		"request_count":  a.RequestCount,
+		"status":          "operational",
+		"uptime":          uptime.String(),
+		"version":         "1.0.0",
+		"fragment_count":  len(a.Fragments),
+		"total_requests":  a.RequestCount,
+		"your_requests":   userRequests,
+		"remaining_limit": remainingRequests,
+		"is_donor":        isDonor,
 	})
 }
 

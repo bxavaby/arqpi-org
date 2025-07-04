@@ -296,12 +296,6 @@ class PixelZine {
 
   formatStatus(status) {
     let formattedUptime = status.uptime || "Unknown";
-    if (formattedUptime.includes("m") && formattedUptime.includes("s")) {
-    } else if (typeof formattedUptime === "number") {
-      const minutes = Math.floor(formattedUptime / 60);
-      const seconds = Math.floor(formattedUptime % 60);
-      formattedUptime = `${minutes}m ${seconds}s`;
-    }
 
     return `
           <div class="status-section">
@@ -310,12 +304,13 @@ class PixelZine {
               </p>
           </div>
 
-          <div class="page-decoration"><span>·</span></div>
+          <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
 
           <div class="status-details">
               <p>Version: ${status.version || "1.0.0"}</p>
               <p>Uptime: ${formattedUptime}</p>
               <p>Total requests: ${status.request_count?.toLocaleString() || "0"}</p>
+              ${status.fragment_count ? `<p>Fragments in database: ${status.fragment_count?.toLocaleString()}</p>` : ""}
           </div>
 
           ${status.message ? `<p class="status-message">${status.message}</p>` : ""}
