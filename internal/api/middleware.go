@@ -12,10 +12,13 @@ import (
 
 func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Handler {
 	donorKeysStr := os.Getenv("DONOR_API_KEYS")
+	log.Printf("RateLimiter initialization: Donor keys env variable length: %d", len(donorKeysStr))
+
 	donorKeys := make(map[string]bool)
 	if donorKeysStr != "" {
-		for key := range strings.SplitSeq(donorKeysStr, ",") {
-			donorKeys[strings.TrimSpace(key)] = true
+		for _, key := range strings.Split(donorKeysStr, ",") {
+			trimmedKey := strings.TrimSpace(key)
+			donorKeys[trimmedKey] = true
 		}
 	}
 
@@ -32,10 +35,18 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 			}
 
 			apiKey := r.URL.Query().Get("key")
-			if apiKey != "" && isDonorKey(apiKey) {
-				log.Printf("Donor key used: %s", apiKey[:8]+"...")
-				next.ServeHTTP(w, r)
-				return
+			log.Printf("Request with key: %s", maskKey(apiKey))
+
+			if apiKey != "" {
+				// direct check against map
+				isDonor := donorKeys[apiKey]
+				log.Printf("Key donor status: %v", isDonor)
+
+				if isDonor {
+					log.Printf("Bypassing rate limit for donor key")
+					next.ServeHTTP(w, r)
+					return
+				}
 			}
 
 			clientID := getClientID(r)
@@ -112,23 +123,41 @@ func getClientID(r *http.Request) string {
 	return ip + "|" + ua
 }
 
-func isDonorKey(key string) bool {
-	if key == "" {
+func isDonorKey(apiKey string) bool {
+	if apiKey == "" {
+		log.Printf("isDonorKey: Empty key provided, returning false")
 		return false
 	}
 
 	donorKeysEnv := os.Getenv("DONOR_API_KEYS")
 	if donorKeysEnv == "" {
+		log.Printf("isDonorKey: No donor keys in environment, returning false")
 		return false
 	}
 
-	donorKeys := strings.SplitSeq(donorKeysEnv, ",")
-	for k := range donorKeys {
-		if strings.TrimSpace(k) == key {
+	log.Printf("isDonorKey: Checking against env variable (length: %d)", len(donorKeysEnv))
+
+	donorKeySlice := strings.Split(donorKeysEnv, ",")
+	log.Printf("isDonorKey: Split into %d keys", len(donorKeySlice))
+
+	for i, donorKey := range donorKeySlice {
+		cleanKey := strings.TrimSpace(donorKey)
+		log.Printf("isDonorKey: Key %d (masked): %s", i, maskKey(cleanKey))
+		if cleanKey == apiKey {
+			log.Printf("isDonorKey: Match found!")
 			return true
 		}
 	}
+
+	log.Printf("isDonorKey: No match found")
 	return false
+}
+
+func maskKey(key string) string {
+	if len(key) <= 8 {
+		return "***"
+	}
+	return key[:4] + "..." + key[len(key)-4:]
 }
 
 func CacheControl(duration string) func(http.Handler) http.Handler {
