@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -27,21 +28,26 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			origin := r.Header.Get("Origin")
-			if origin == "https://arqpi.org" || origin == "https://www.arqpi.org" || origin == "https://bxavaby.github.io" {
-				w.Header().Set("Access-Control-Allow-Origin", origin)
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-				w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Kofi-Verification-Token")
-				w.Header().Set("Access-Control-Max-Age", "300")
+			if origin := r.Header.Get("Origin"); origin != "" {
+				allowedOrigins := []string{"https://arqpi.org", "https://www.arqpi.org", "https://bxavaby.github.io"}
+				if slices.Contains(allowedOrigins, origin) {
+					w.Header().Set("Access-Control-Allow-Origin", origin)
+				}
 			}
 
 			// return immediately
 			if r.Method == "OPTIONS" {
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Kofi-Verification-Token")
+				w.Header().Set("Access-Control-Max-Age", "300")
 				w.WriteHeader(http.StatusOK)
 				return
 			}
 
-			ip := r.RemoteAddr
+			ip := r.Header.Get("X-Forwarded-For")
+			if ip == "" {
+				ip = r.RemoteAddr
+			}
 
 			apiKey := r.URL.Query().Get("key")
 			if apiKey != "" && isDonorKey(apiKey) {
