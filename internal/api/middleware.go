@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,13 +14,18 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 	donorKeysStr := os.Getenv("DONOR_API_KEYS")
 	donorKeys := make(map[string]bool)
 	if donorKeysStr != "" {
-		for _, key := range strings.Split(donorKeysStr, ",") {
+		for key := range strings.SplitSeq(donorKeysStr, ",") {
 			donorKeys[strings.TrimSpace(key)] = true
 		}
 	}
 
+	log.Printf("Rate limiter initialized: %d requests per %d seconds", limit, windowSecs)
+	log.Printf("Loaded %d donor keys", len(donorKeys))
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			log.Printf("Request from: %s, Path: %s", getClientID(r), r.URL.Path)
+
 			if r.Method == "OPTIONS" {
 				next.ServeHTTP(w, r)
 				return
@@ -27,33 +33,41 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 
 			apiKey := r.URL.Query().Get("key")
 			if apiKey != "" && isDonorKey(apiKey) {
+				log.Printf("Donor key used: %s", apiKey[:8]+"...")
 				next.ServeHTTP(w, r)
 				return
 			}
 
 			clientID := getClientID(r)
+			log.Printf("Client ID: %s", clientID)
 
 			a.clientsMu.Lock()
-			defer a.clientsMu.Unlock()
-
 			c, exists := a.clients[clientID]
+
 			if !exists {
+				log.Printf("New client: %s", clientID)
 				a.clients[clientID] = &client{
 					count:     1,
 					lastReset: time.Now(),
 				}
+				a.clientsMu.Unlock()
 				next.ServeHTTP(w, r)
 				return
 			}
 
 			if time.Since(c.lastReset).Seconds() > float64(windowSecs) {
+				log.Printf("Resetting count for client: %s (previous count: %d)", clientID, c.count)
 				c.count = 1
 				c.lastReset = time.Now()
+				a.clientsMu.Unlock()
 				next.ServeHTTP(w, r)
 				return
 			}
 
 			if c.count >= limit {
+				log.Printf("Rate limit exceeded for client: %s (count: %d)", clientID, c.count)
+				a.clientsMu.Unlock()
+
 				w.Header().Set("Retry-After", strconv.Itoa(windowSecs))
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusTooManyRequests)
@@ -63,6 +77,8 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 					"message":             "You've reached the free usage limit. Consider supporting this project on Ko-fi to get unlimited access.",
 					"donate_url":          "https://ko-fi.com/bxav",
 					"retry_after_seconds": windowSecs,
+					"current_count":       c.count,
+					"limit":               limit,
 				}
 
 				json.NewEncoder(w).Encode(donationMessage)
@@ -70,6 +86,9 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 			}
 
 			c.count++
+			log.Printf("Incremented count for client: %s (new count: %d)", clientID, c.count)
+			a.clientsMu.Unlock()
+
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -103,8 +122,8 @@ func isDonorKey(key string) bool {
 		return false
 	}
 
-	donorKeys := strings.Split(donorKeysEnv, ",")
-	for _, k := range donorKeys {
+	donorKeys := strings.SplitSeq(donorKeysEnv, ",")
+	for k := range donorKeys {
 		if strings.TrimSpace(k) == key {
 			return true
 		}

@@ -298,23 +298,25 @@ class PixelZine {
     let formattedUptime = status.uptime || "Unknown";
 
     return `
-          <div class="status-section">
-              <p class="status-indicator ${status.status === "operational" ? "status-operational" : "status-error"}">
-                  Status: ${status.status || "Unknown"}
-              </p>
-          </div>
+      <div class="status-section">
+          <p class="status-indicator ${status.status === "operational" ? "status-operational" : "status-error"}">
+              Status: ${status.status || "Unknown"}
+          </p>
+      </div>
 
-          <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
+      <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
 
-          <div class="status-details">
-              <p>Version: ${status.version || "1.0.0"}</p>
-              <p>Uptime: ${formattedUptime}</p>
-              <p>Total requests: ${status.request_count?.toLocaleString() || "0"}</p>
-              ${status.fragment_count ? `<p>Fragments in database: ${status.fragment_count?.toLocaleString()}</p>` : ""}
-          </div>
+      <div class="status-details">
+          <p>Version: ${status.version || "1.0.0"}</p>
+          <p>Uptime: ${formattedUptime}</p>
+          <p>Total requests: ${status.total_requests?.toLocaleString() || "0"}</p>
+          <p>Your requests: ${status.your_requests?.toLocaleString() || "0"}</p>
+          <p>Remaining limit: ${status.remaining_limit?.toLocaleString() || "N/A"}</p>
+          ${status.is_donor ? '<p class="status-donor">✓ Donor status active</p>' : ""}
+      </div>
 
-          ${status.message ? `<p class="status-message">${status.message}</p>` : ""}
-      `;
+      ${status.message ? `<p class="status-message">${status.message}</p>` : ""}
+    `;
   }
 
   showError(message) {

@@ -35,12 +35,13 @@ type client struct {
 
 func NewAPI(fragments []models.Fragment, metadata models.Metadata, rng *rand.Rand) *API {
 	return &API{
-		Fragments:   fragments,
-		Metadata:    metadata,
-		SearchIndex: search.NewSearchIndex(fragments),
-		StartTime:   time.Now(),
-		rng:         rng,
-		clients:     make(map[string]*client),
+		Fragments:    fragments,
+		Metadata:     metadata,
+		SearchIndex:  search.NewSearchIndex(fragments),
+		StartTime:    time.Now(),
+		RequestCount: 0,
+		rng:          rng,
+		clients:      make(map[string]*client),
 	}
 }
 
@@ -163,10 +164,7 @@ func (a *API) GetStatus(w http.ResponseWriter, r *http.Request) {
 
 	if client, exists := a.clients[clientID]; exists {
 		userRequests = client.count
-		remainingRequests = rateLimit - client.count
-		if remainingRequests < 0 {
-			remainingRequests = 0
-		}
+		remainingRequests = max(rateLimit-client.count, 0)
 	} else {
 		remainingRequests = rateLimit
 	}
