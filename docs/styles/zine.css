@@ -326,6 +326,43 @@ a:hover {
     font-family: var(--font-mono);
 }
 
+/* Status */
+.status-section {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.status-indicator {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-weight: bold;
+}
+
+.status-operational {
+    background-color: rgba(148, 255, 171, 0.1);
+    color: var(--color-green-bright);
+    border: 1px solid var(--color-green-bright);
+}
+
+.status-error {
+    background-color: rgba(255, 85, 85, 0.1);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+}
+
+.status-details {
+    font-family: var(--font-mono);
+    line-height: 1.8;
+}
+
+.status-message {
+    margin-top: var(--space-md);
+    padding: var(--space-sm);
+    border-left: 2px solid var(--color-accent);
+}
+
 /* Footer */
 .zine-footer {
     text-align: center;

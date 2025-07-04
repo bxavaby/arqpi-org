@@ -295,12 +295,31 @@ class PixelZine {
   }
 
   formatStatus(status) {
+    let formattedUptime = status.uptime || "Unknown";
+    if (formattedUptime.includes("m") && formattedUptime.includes("s")) {
+    } else if (typeof formattedUptime === "number") {
+      const minutes = Math.floor(formattedUptime / 60);
+      const seconds = Math.floor(formattedUptime % 60);
+      formattedUptime = `${minutes}m ${seconds}s`;
+    }
+
     return `
-            <p>Uptime: ${status.uptime || "Unknown"}</p>
-            <p>Total requests: ${status.requests || "0"}</p>
-            <p>Fragments available: ${status.fragments || "0"}</p>
-            ${status.message ? `<p>${status.message}</p>` : ""}
-        `;
+          <div class="status-section">
+              <p class="status-indicator ${status.status === "operational" ? "status-operational" : "status-error"}">
+                  Status: ${status.status || "Unknown"}
+              </p>
+          </div>
+
+          <div class="page-decoration"><span>·</span></div>
+
+          <div class="status-details">
+              <p>Version: ${status.version || "1.0.0"}</p>
+              <p>Uptime: ${formattedUptime}</p>
+              <p>Total requests: ${status.request_count?.toLocaleString() || "0"}</p>
+          </div>
+
+          ${status.message ? `<p class="status-message">${status.message}</p>` : ""}
+      `;
   }
 
   showError(message) {
