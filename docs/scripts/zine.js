@@ -268,7 +268,7 @@ class PixelZine {
               <p class="info-detail">from ${info.authors_count || 0} authors across ${info.categories_count || 0} categories</p>
           </div>
 
-          <div class="page-decoration"><span>·</span></div>
+          <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
 
           <div class="info-section">
               <p class="info-title">The Heteronyms</p>
@@ -280,15 +280,15 @@ class PixelZine {
                       ?.map(
                         (name) => `<span class="heteronym-name">${name}</span>`,
                       )
-                      .join(" · ") || ""
+                      .join("") || ""
                   }
               </div>
           </div>
 
-          <div class="page-decoration"><span>·</span></div>
+          <div class="page-decoration"><span>·</span><span>·</span><span>·</span></div>
 
           <div class="info-section">
-              <p class="info-detail">Source: ${info.project_info?.source || ""}</p>
+              <p class="info-detail">Source: <a href="http://${info.project_info?.source || ""}" target="_blank">${info.project_info?.source || ""}</a></p>
               <p class="info-detail small">${info.project_info?.license || ""}</p>
           </div>
       `;
