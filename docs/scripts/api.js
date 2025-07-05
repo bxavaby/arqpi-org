@@ -13,15 +13,18 @@ class ApiClient {
   constructor(baseUrl = "https://arqpi-org.onrender.com") {
     this.baseUrl = baseUrl;
     this.localStorageAvailable = checkLocalStorage();
+    this.loadApiKey();
 
+    console.log("Storage available:", this.localStorageAvailable);
+    console.log("API key loaded:", this.apiKey ? "Yes" : "No");
+  }
+
+  loadApiKey() {
     if (this.localStorageAvailable) {
       this.apiKey = localStorage.getItem("arqpi_key") || null;
     } else {
       this.apiKey = null;
     }
-
-    console.log("Storage available:", this.localStorageAvailable);
-    console.log("API key loaded:", this.apiKey ? "Yes" : "No");
   }
 
   /**
@@ -31,6 +34,8 @@ class ApiClient {
    * @returns {Promise}
    */
   async get(endpoint, params = {}) {
+    this.loadApiKey();
+
     try {
       const url = new URL(`${this.baseUrl}${endpoint}`);
 
@@ -64,15 +69,29 @@ class ApiClient {
   }
 
   setApiKey(key) {
-    console.log("ApiClient.setApiKey called with:", key);
-    this.apiKey = key;
-    localStorage.setItem("arqpi_key", key);
-    console.log("ApiClient.apiKey is now:", this.apiKey);
+    console.log(
+      "ApiClient.setApiKey called with:",
+      key ? "Key provided" : "Empty key",
+    );
+
+    if (key && key.trim() !== "") {
+      this.apiKey = key;
+      if (this.localStorageAvailable) {
+        localStorage.setItem("arqpi_key", key);
+        console.log("API key saved to localStorage");
+      }
+    } else {
+      this.clearApiKey();
+      console.log("API key cleared (empty value provided)");
+    }
   }
 
   clearApiKey() {
+    console.log("Clearing API key");
     this.apiKey = null;
-    localStorage.removeItem("arqpi_key");
+    if (this.localStorageAvailable) {
+      localStorage.removeItem("arqpi_key");
+    }
   }
 }
 
