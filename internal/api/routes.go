@@ -42,10 +42,10 @@ func (a *API) SetupRoutes() http.Handler {
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://arqpi.org", "https://www.arqpi.org", "https://bxavaby.github.io"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Content-Type", "Kofi-Verification-Token"},
-		ExposedHeaders:   []string{"Link"},
+		AllowedHeaders:   []string{"Accept", "Content-Type", "Kofi-Verification-Token", "Origin", "X-Requested-With"},
+		ExposedHeaders:   []string{"Link", "Content-Length"},
 		AllowCredentials: false,
-		MaxAge:           300,
+		MaxAge:           600,
 	}))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
