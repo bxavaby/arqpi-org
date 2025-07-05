@@ -27,55 +27,55 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("Request from: %s, Path: %s", getClientID(r), r.URL.Path)
 
 			if r.Method == "OPTIONS" {
 				next.ServeHTTP(w, r)
 				return
 			}
 
+			clientID := getClientID(r)
+			log.Printf("Client ID: %s", clientID)
+
 			apiKey := r.URL.Query().Get("key")
-			log.Printf("Request with key: %s", maskKey(apiKey))
+			isDonor := false
 
 			if apiKey != "" {
 				// direct check against map
-				isDonor := donorKeys[apiKey]
-				log.Printf("Key donor status: %v", isDonor)
-
-				if isDonor {
-					log.Printf("Bypassing rate limit for donor key")
-					next.ServeHTTP(w, r)
-					return
-				}
+				isDonor = donorKeys[apiKey]
+				log.Printf("Request with key: %s, is donor: %v", maskKey(apiKey), isDonor)
 			}
-
-			clientID := getClientID(r)
-			log.Printf("Client ID: %s", clientID)
 
 			a.clientsMu.Lock()
 			c, exists := a.clients[clientID]
 
 			if !exists {
-				log.Printf("New client: %s", clientID)
 				a.clients[clientID] = &client{
 					count:     1,
 					lastReset: time.Now(),
+					isDonor:   isDonor,
 				}
+				log.Printf("New client: %s, is donor: %v", clientID, isDonor)
 				a.clientsMu.Unlock()
 				next.ServeHTTP(w, r)
 				return
 			}
+
+			c.isDonor = isDonor
 
 			if time.Since(c.lastReset).Seconds() > float64(windowSecs) {
-				log.Printf("Resetting count for client: %s (previous count: %d)", clientID, c.count)
 				c.count = 1
 				c.lastReset = time.Now()
+				log.Printf("Reset counter for client: %s, is donor: %v", clientID, c.isDonor)
 				a.clientsMu.Unlock()
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			if c.count >= limit {
+			c.count++
+			log.Printf("Incremented count for client: %s (new count: %d, is donor: %v)",
+				clientID, c.count, c.isDonor)
+
+			if !isDonor && c.count > limit {
 				log.Printf("Rate limit exceeded for client: %s (count: %d)", clientID, c.count)
 				a.clientsMu.Unlock()
 
@@ -96,10 +96,7 @@ func (a *API) RateLimiter(limit int, windowSecs int) func(http.Handler) http.Han
 				return
 			}
 
-			c.count++
-			log.Printf("Incremented count for client: %s (new count: %d)", clientID, c.count)
 			a.clientsMu.Unlock()
-
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -154,6 +151,9 @@ func isDonorKey(apiKey string) bool {
 }
 
 func maskKey(key string) string {
+	if key == "" {
+		return "none"
+	}
 	if len(key) <= 8 {
 		return "***"
 	}

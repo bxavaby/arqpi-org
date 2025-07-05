@@ -4,7 +4,7 @@ function checkLocalStorage() {
     localStorage.removeItem("test");
     return true;
   } catch (e) {
-    console.error("localStorage not available:", e);
+    /* console.error("localStorage not available:", e); */
     return false;
   }
 }
@@ -15,8 +15,8 @@ class ApiClient {
     this.localStorageAvailable = checkLocalStorage();
     this.loadApiKey();
 
-    console.log("Storage available:", this.localStorageAvailable);
-    console.log("API key loaded:", this.apiKey ? "Yes" : "No");
+    /* console.log("Storage available:", this.localStorageAvailable); */
+    /* console.log("API key loaded:", this.apiKey ? "Yes" : "No"); */
   }
 
   loadApiKey() {
@@ -39,8 +39,8 @@ class ApiClient {
     try {
       const url = new URL(`${this.baseUrl}${endpoint}`);
 
-      console.log("Making request to:", endpoint);
-      console.log("Current API key:", this.apiKey ? "Key exists" : "No key");
+      /* console.log("Making request to:", endpoint); */
+      /* console.log("Current API key:", this.apiKey ? "Key exists" : "No key"); */
 
       Object.keys(params).forEach((key) => {
         if (params[key] !== undefined && params[key] !== null) {
@@ -50,10 +50,10 @@ class ApiClient {
 
       if (this.apiKey) {
         url.searchParams.append("key", this.apiKey);
-        console.log("Added API key to request");
+        /* console.log("Added API key to request"); */
       }
 
-      console.log("Final request URL:", url.toString());
+      /* console.log("Final request URL:", url.toString()); */
 
       const response = await fetch(url);
 
@@ -63,7 +63,7 @@ class ApiClient {
 
       return await response.json();
     } catch (error) {
-      console.error("API request failed:", error);
+      /* console.error("API request failed:", error); */
       throw error;
     }
   }
@@ -78,16 +78,16 @@ class ApiClient {
       this.apiKey = key;
       if (this.localStorageAvailable) {
         localStorage.setItem("arqpi_key", key);
-        console.log("API key saved to localStorage");
+        /* console.log("API key saved to localStorage"); */
       }
     } else {
       this.clearApiKey();
-      console.log("API key cleared (empty value provided)");
+      /* console.log("API key cleared (empty value provided)"); */
     }
   }
 
   clearApiKey() {
-    console.log("Clearing API key");
+    /* console.log("Clearing API key"); */
     this.apiKey = null;
     if (this.localStorageAvailable) {
       localStorage.removeItem("arqpi_key");

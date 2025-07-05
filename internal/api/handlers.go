@@ -31,6 +31,7 @@ type API struct {
 type client struct {
 	count     int
 	lastReset time.Time
+	isDonor   bool
 }
 
 func NewAPI(fragments []models.Fragment, metadata models.Metadata, rng *rand.Rand) *API {

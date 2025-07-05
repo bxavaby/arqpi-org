@@ -67,14 +67,14 @@ class ApiSettings {
   saveApiKey(key) {
     this.apiKey = key;
     localStorage.setItem("arqpi_key", key);
-    console.log("Key saved to localStorage:", key);
-    console.log(
+    /* console.log("Key saved to localStorage:", key); */
+    /* console.log(
       "Verification - localStorage now contains:",
       localStorage.getItem("arqpi_key"),
-    );
+    ); */
     if (window.api) {
       window.api.setApiKey(key);
-      console.log("Key set on API client:", window.api.apiKey);
+      /* console.log("Key set on API client:", window.api.apiKey); */
     }
   }
 

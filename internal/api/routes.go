@@ -20,9 +20,9 @@ func (a *API) SetupRoutes() http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(a.requestCounter)
 
-	// 60 requests/h for non-donors
-	rateLimit := 60
-	rateWindow := 3600
+	// 5 requests/min for non-donors
+	rateLimit := 5
+	rateWindow := 60
 
 	if envLimit := os.Getenv("API_RATE_LIMIT"); envLimit != "" {
 		if val, err := strconv.Atoi(envLimit); err == nil && val > 0 {
